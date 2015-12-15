@@ -43,7 +43,7 @@ class App extends Component {
       <div className={layoutClass}>
         <Sidebar layout={layout} user={user} version={version} />
   	    <div className="wrap">
-          <Header todos={todos} counter={counter} />
+          <Header todos={todos} counter={counter} user={user} dispatch={this.props.dispatch}/>
           <div className="container content">
             {!this.props.children && <Home />}
             {this.props.children}

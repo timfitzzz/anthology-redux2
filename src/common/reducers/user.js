@@ -5,17 +5,40 @@ import { AUTHORIZE_TWITTER,
 
 export default function user(state = {
   tokens: {},
+  accounts: {},
   fetchingAuth: false
 }, action) {
   switch (action.type) {
   case AUTHORIZE_TWITTER:
-    return Object.assign({}, state, {fetchingAuth: true});
+    return (Object.assign({}, state, {fetchingAuth: true}));
   case TWITTER_LOGIN:
-    return state;
+    var newstate = {
+      tokens: {
+        ...state.tokens
+      },
+      accounts: {
+        ...state.accounts
+      },
+      fetchingAuth: false
+    };
+    newstate.tokens.twitter = action.data.token;
+    newstate.accounts.twitter = action.data;
+    return Object.assign({}, state, newstate);
   case TWITTER_FAILED:
-    return state;
+    return (Object.assign({}, state, {fetchingAuth: false}));
   case TWITTER_LOGOUT:
-    return state;
+    var newstate = {
+      tokens: {
+        ...state.tokens
+      },
+      accounts: {
+        ...state.accounts
+      },
+      fetchingAuth: false
+    }
+    newstate.tokens.twitter = undefined;
+    newstate.accounts.twitter = undefined;
+    return (Object.assign({}, state, newstate));
   default:
     return state;
   }

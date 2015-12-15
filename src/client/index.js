@@ -21,7 +21,7 @@ React.render(
   <Provider store={store}>
     {() =>
         <ReduxRouter>
-          <Router children={routes} history={history} />
+          <Router children={routes} history={history}/>
         </ReduxRouter>
     }
   </Provider>,

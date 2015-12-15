@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import Header from './todo/Header';
 import Section from './todo/Section';
 
+var hello = "HI Z"
+
 class Todo extends Component {
   render() {
     const { todos, actions } = this.props;

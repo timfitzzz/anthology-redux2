@@ -16,6 +16,20 @@ import { getUser } from '../common/api/user';
 import routes from '../common/routes';
 import packagejson from '../../package.json';
 
+// add cookieParser, etc from other bp
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
+
+// mongoose
+var MONGO_DB = require('./config').MONGO_DB;
+var mongoose = require('mongoose');
+mongoose.connect(MONGO_DB.MONGO_URI, function(err) {
+  if (err) {throw err}
+}); // connect to db
+
+
+
 const app = express();
 const renderFullPage = (html, initialState) => {
   return `
@@ -29,7 +43,7 @@ const renderFullPage = (html, initialState) => {
       <body>
         <div id="root">${html}</div>
         <script>
-          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)}; 
+          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
         <script src="/static/bundle.js"></script>
       </body>
@@ -45,51 +59,79 @@ if(process.env.NODE_ENV !== 'production'){
   app.use('/static', express.static(__dirname + '/../../dist'));
 }
 
+// add cookieparser for auth
+app.use(cookieParser());
+
+app.use(morgan('dev')); // log every request to the console
+app.use(bodyParser.json()); // get information from html forms
+
+// passport init
+var passport = require('./passport')(app);
+// twitter auth Routes
+app.get('/auth/twitter', passport.authenticate('twitter'));
+app.get('/auth/twitter/callback',
+  passport.authenticate('twitter', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+}));
+app.get('/profile', function(req, res) {
+  const response = req.user ? req.user : {}
+  console.log('res -- profile', response)
+  return res.send(response);
+});
+
+// initialize API routes
+import { initApiRouter } from './api/apiRoutes';
+initApiRouter(app);
+
+
+// route middleware to make sure a user is logged in
+function isLoggedIn(req, res, next) {
+
+  // if user is authenticated in the session, carry on
+  if (req.isAuthenticated())
+    return next();
+
+  // if they aren't redirect them to the login page
+  res.redirect('/login');
+};
+
+
 app.get('/*', function (req, res) {
 
   const location = createLocation(req.url);
 
-  getUser(user => {
+  match({ routes, location }, (err, redirectLocation, renderProps) => {
 
-      if(!user) {
-        return res.status(401).end('Not Authorised');
-      }
-
-      match({ routes, location }, (err, redirectLocation, renderProps) => {
-
-        if(err) {
-          console.error(err);
-          return res.status(500).end('Internal server error');
-        }
-
-        if(!renderProps)
-          return res.status(404).end('Not found');
-
-        const store = configureStore({user : user, version : packagejson.version});
-
-        const InitialView = (
-          <Provider store={store}>
-            {() =>
-              <RoutingContext {...renderProps} />
-            }
-          </Provider>
-        );
-
-        //This method waits for all render component promises to resolve before returning to browser
-        fetchComponentDataBeforeRender(store.dispatch, renderProps.components, renderProps.params)
-          .then(html => {
-            const componentHTML = React.renderToString(InitialView);
-            const initialState = store.getState();
-            res.status(200).end(renderFullPage(componentHTML,initialState))
-          })
-          .catch(err => {
-            console.log(err)
-            res.end(renderFullPage("",{}))
-          });
-      });
-
+    if(err) {
+      console.error(err);
+      return res.status(500).end('Internal server error');
     }
-  )
+
+    if(!renderProps)
+      return res.status(404).end('Not found');
+
+    const store = configureStore({user : req.user, version : packagejson.version});
+    const InitialView = (
+      <Provider store={store}>
+        {() =>
+          <RoutingContext {...renderProps} />
+        }
+      </Provider>
+    );
+
+    //This method waits for all render component promises to resolve before returning to browser
+    fetchComponentDataBeforeRender(store.dispatch, renderProps.components, renderProps.params)
+      .then(html => {
+        const componentHTML = React.renderToString(InitialView);
+        const initialState = store.getState();
+        res.status(200).end(renderFullPage(componentHTML,initialState))
+      })
+      .catch(err => {
+        console.log("Error on render: " + err)
+        res.end(renderFullPage("",{}))
+      });
+  });
 
 });
 

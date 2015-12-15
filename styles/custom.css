@@ -22,7 +22,7 @@
 
 .undo-button:hover,
 .redo-button:hover {
-   color:#268bd2;   
+   color:#268bd2;
 }
 
 .open .undo-button,
@@ -30,7 +30,7 @@
    z-index: 10;
    -webkit-transform: translateX(14rem);
    -ms-transform: translateX(14rem);
-   transform: translateX(14rem);   
+   transform: translateX(14rem);
 }
 
 
@@ -87,4 +87,16 @@
 .post-tag {
 	font-size:0.7em;
 	text-transform:uppercase;
+}
+
+.login-button {
+  float: right;
+  vertical-align: center;
+  margin-top: -20px;
+}
+
+.user-controls {
+  float: right;
+  vertical-align: center;
+  margin-top: -20px;
 }

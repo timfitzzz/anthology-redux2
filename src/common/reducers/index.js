@@ -8,6 +8,7 @@ import layout from './layout';
 import todos from './todos';
 import version from './version';
 import { selectedReddit, postsByReddit } from './reddit';
+import scenes from './scenes';
 
 const rootReducer = combineReducers({
   user : user,
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   todos : undoable(todos),
   selectedReddit : undoable(selectedReddit),
   postsByReddit : undoable(postsByReddit),
-  router : routerStateReducer
+  router : routerStateReducer,
+  scenes: undoable(scenes)
 });
 
 export default rootReducer;

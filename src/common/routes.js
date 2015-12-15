@@ -3,6 +3,13 @@ import React from "react";
 
 import App from "./containers/App";
 
+function requireAuth(nextState, replaceState) {
+  // if(Store.getState().user.tokens === {}) {
+  //   replaceState({ nextPathname: nextState.location.pathname }, '/login');
+  // }
+}
+
+
 //Redux Smart
 import CounterPage from "./containers/CounterPage";
 import RedditPage from "./containers/RedditPage";
@@ -14,7 +21,7 @@ import AboutPage from "./components/About";
 import error404 from "./components/404";
 
 export default (
-  <Route name="app" path="/" component={App}>
+  <Route name="app" path="/" component={App} onEnter={requireAuth}>
       <Route path="home" component={HomePage} />
       <Route path="reddit" component={RedditPage} />
       <Route path="todo" component={TodoPage} />

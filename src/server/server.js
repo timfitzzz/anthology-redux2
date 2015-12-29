@@ -71,30 +71,44 @@ var passport = require('./passport')(app);
 app.get('/auth/twitter', passport.authenticate('twitter'));
 app.get('/auth/twitter/callback',
   passport.authenticate('twitter', {
-    successRedirect: '/',
-    failureRedirect: '/login'
+    successRedirect: '/UserHome',
+    failureRedirect: '/login',
+    session: true
 }));
 app.get('/profile', function(req, res) {
   const response = req.user ? req.user : {}
   console.log('res -- profile', response)
   return res.send(response);
 });
+/* this is for debugging session data */
+app.use(function(req, res, next) {
+    console.log('-- session --');
+    console.dir(req.session);
+    console.log('-------------');
+    console.log('-- cookies --');
+    console.dir(req.cookies);
+    console.log('-------------');
+    console.log('-- signed cookies --');
+    console.dir(req.signedCookies);
+    console.log('-------------');
+    next()
+  });
 
 // initialize API routes
 import { initApiRouter } from './api/apiRoutes';
 initApiRouter(app);
 
-
-// route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
-
-  // if user is authenticated in the session, carry on
-  if (req.isAuthenticated())
-    return next();
-
-  // if they aren't redirect them to the login page
-  res.redirect('/login');
-};
+// pretty sure this isn't in use.
+// // route middleware to make sure a user is logged in
+// function isLoggedIn(req, res, next) {
+//
+//   // if user is authenticated in the session, carry on
+//   if (req.isAuthenticated())
+//     return next();
+//
+//   // if they aren't redirect them to the login page
+//   res.redirect('/login');
+// };
 
 
 app.get('/*', function (req, res) {
@@ -102,6 +116,9 @@ app.get('/*', function (req, res) {
   const location = createLocation(req.url);
 
   match({ routes, location }, (err, redirectLocation, renderProps) => {
+
+    console.log(renderProps.components);
+    console.log(renderProps.params);
 
     if(err) {
       console.error(err);
@@ -125,6 +142,7 @@ app.get('/*', function (req, res) {
       .then(html => {
         const componentHTML = React.renderToString(InitialView);
         const initialState = store.getState();
+        console.log(initialState.scenes.user);
         res.status(200).end(renderFullPage(componentHTML,initialState))
       })
       .catch(err => {

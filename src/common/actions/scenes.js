@@ -1,4 +1,3 @@
-import request from 'axios';
 import fetch from 'isomorphic-fetch';
 
 export const GET_USER_SCENE_IDS = 'GET_USER_SCENE_IDS';
@@ -6,15 +5,16 @@ export const UPDATE_USER_SCENE_IDS = 'UPDATE_USER_SCENE_IDS';
 export const GET_USER_SCENE_IDS_FAILED = 'GET_USER_SCENE_IDS_FAILED';
 
 export const GET_SCENE_BRIEFS = 'GET_SCENE_BRIEFS';
-export const UPDATE_SCENE_BRIEFS = 'LOAD_SCENE_BRIEFS';
+export const UPDATE_SCENE_BRIEFS = 'UPDATE_SCENE_BRIEFS';
 export const GET_SCENE_BRIEFS_FAILED = 'GET_SCENE_BRIEFS_FAILED';
 
 export const GET_SCENE = 'GET_SCENE';
 export const UPDATE_SCENE = 'UPDATE_SCENE';
 export const GET_SCENE_FAILED = 'GET_SCENE_FAILED';
 
-export const CREATE_NEW_SCENE = 'MAKE_NEW_SCENE';
-export const NEW_SCENE_CREATED = 'NEW_SCENE_CREATED';
+export const CREATE_SCENE = 'CREATE_SCENE';
+export const SCENE_CREATED = 'SCENE_CREATED';
+export const CREATE_SCENE_FAILED = 'CREATE_SCENE_FAILED';
 
 export const TOGGLE_SCENE_PUBLICITY = 'TOGGLE_SCENE_PUBLICITY';
 
@@ -87,6 +87,7 @@ export function getSceneBriefs(ids) {
       body: JSON.stringify({
         ids: ids
       })
+    })
       .then(checkStatusCode)
       .then(responseToJson)
       .then(data => {
@@ -96,8 +97,7 @@ export function getSceneBriefs(ids) {
           handleError();
         }
       })
-      .catch(handleError)
-    });
+      .catch(handleError);
 
     // TODO abstract error handling to separate service
     function responseToJson(res){
@@ -183,6 +183,7 @@ export function updateScene(scene) {
 //    , getScene(sceneId)
 export function createScene (userId, name) {
   return dispatch => {
+
     dispatch({
       type: CREATE_SCENE,
       userId,
@@ -190,6 +191,7 @@ export function createScene (userId, name) {
     });
 
     fetch('http://127.0.0.1:3002/api/createScene', {
+      credentials: 'same-origin',
       method: 'post',
       headers: {
         'Accept': 'application/json',
@@ -204,7 +206,7 @@ export function createScene (userId, name) {
     .then(responseToJson)
     .then(data => {
       if (data) {
-        dispatch(newSceneCreated(data.id));
+        dispatch(sceneCreated(data.sceneId));
       } else {
         handleError();
       }
@@ -212,7 +214,7 @@ export function createScene (userId, name) {
     .catch(handleError);
 
     // TODO abstract error handling to separate service
-    function responseToJson(res){
+    function responseToJson(res) {
       return res.json();
     }
 
@@ -229,13 +231,13 @@ export function createScene (userId, name) {
     }
   };
 }
-export function newSceneCreated(sceneId) {
-    this.getScene(sceneId);
-    return {
-      type: NEW_SCENE_CREATED,
-      id: sceneId
-    };
-}
+export function sceneCreated(sceneId) {
+    return dispatch => {
+      dispatch({type: 'SCENE_CREATED',
+                sceneId: sceneId });
+      dispatch(getScene(sceneId));
+    }
+  }
 
 // postToggleScenePublicity: sceneId
 //    -> dispatch('POST_TOGGLE_SCENE_PUBLICITY')

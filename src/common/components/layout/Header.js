@@ -35,7 +35,6 @@ class Header extends Component {
   }
 
   renderUserOrLoginButton() {
-    console.log(this.props.user);
     if (!this.props.user.accounts.twitter) {
       return <div className="login-button">
         <button style={{height: "40px"}} onClick={this.sendToTwitter}>Login With Twitter</button></div>

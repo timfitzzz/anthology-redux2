@@ -19,6 +19,40 @@ import reducer from '../../src/common/reducers/scenes';
 const middlewares = [thunk, promiseMiddleware];
 const mockStore = configureStore(middlewares);
 
+var default_state = {
+  user: []
+};
+
+var userScenes = [1, 2, 3];
+
+var sceneBriefs = {
+  1: {id: 1,
+      name: "#PlatformCoop",
+      created_by_user: "389880004"},
+  2: { id: 2,
+       name: "#NYCGA",
+       created_by_user: "389880004"},
+  3: { id: 3,
+      name: "#PlatformCoop2",
+       created_By_user: "389880004"}};
+
+var sceneData = {
+   1: { id: 1,
+        name: "#PlatformCoop",
+        documents: [{ type: 'twitter', content: { tweet_data: "tweet"}},
+                    { type: 'twitter', content: { tweet_data: "tweet"}}],
+        created_by_user: "389880004" },
+   2: { id: 2,
+         name: "#NYCGA",
+        documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
+                    { type: 'twitter', content: { tweet_data: "tweet" }}],
+        created_by_user: "389880004" },
+   3: { id: 3,
+         name: "#PlatformCoop",
+        documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
+                    { type: 'twitter', content: { tweet_data: "tweet" }}],
+        created_by_user: "389880004" }};
+
 describe('Scene Redux', function() {
 
   describe('Scene Actions', function(){
@@ -26,62 +60,166 @@ describe('Scene Redux', function() {
     before('Set up base state', function() {
       const store = configureStore();
       this.store = store;
-      this.userScenes = [1, 2, 3];
-      this.sceneData = {
-        1: { name: "#PlatformCoop",
-             documents: [{ type: 'twitter', content: { tweet_data: "tweet"}},
-                         { type: 'twitter', content: { tweet_data: "tweet"}}],
-             created_by_user: "389880004" },
-        2: { name: "#NYCGA",
-             documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
-                         { type: 'twitter', content: { tweet_data: "tweet" }}],
-             created_by_user: "389880004" },
-        3: { name: "#PlatformCoop",
-             documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
-                         { type: 'twitter', content: { tweet_data: "tweet" }}],
-             created_by_user: "389880004" }}
+
+
+
 
     });
 
     describe('ScenesActions.getUserSceneIds(1) construction and async', function() {
 
 
-      it('should dispatch GET_USER_SCENE_IDS for user 1, then UPDATE_USER_SCENE_IDS on successful fetch', (done) => {
+      it('should dispatch GET_USER_SCENE_IDS for user 1, \n \t \t then UPDATE_USER_SCENE_IDS on successful fetch', (done) => {
 
         var intercept = nock("http://127.0.0.1:3002")
                         .get("/api/getUserSceneIds/1")
-                        .reply(200, {
-                          userScenes: [1, 2, 3]
-                        })
+                        .reply(200, { userScenes });
 
-        const getState = { //initial state of store
-          user: []
-        }
-        const userId = 1;
+        const expectedActions = [{ type: 'GET_USER_SCENE_IDS', userId: "1" },
+                                 { type: 'UPDATE_USER_SCENE_IDS', userId: "1", userScenes }];
 
-        const expectedActions = [{ type: 'GET_USER_SCENE_IDS', userId: userId },
-                                 { type: 'UPDATE_USER_SCENE_IDS', userId: userId, userScenes: [1, 2, 3] }];
-
-        const store = mockStore(getState, expectedActions, done);
-        store.dispatch(ScenesActions.getUserSceneIds(userId));
+        const store = mockStore(default_state, expectedActions, done);
+        store.dispatch(ScenesActions.getUserSceneIds("1"));
 
       });
 
 
-      it('should dispatch GET_USER_SCENE_IDS for user 1, then GET_USER_SCENE_IDS_FAILED on failed fetch', (done) => {
+      it('should dispatch GET_USER_SCENE_IDS for user 1, \n \t \t then GET_USER_SCENE_IDS_FAILED on failed fetch', (done) => {
 
         var intercept = nock("http://127.0.0.1:3002")
                         .get("/api/getUserSceneIds/1")
                         .reply(401)
 
-        const getState = {user: []}
-        const userId = 1;
-
-        const expectedActions = [{ type: 'GET_USER_SCENE_IDS', userId: userId },
+        const expectedActions = [{ type: 'GET_USER_SCENE_IDS', userId: "1" },
                         { type: 'GET_USER_SCENE_IDS_FAILED', error: new Error('Bad response from server') }];
 
+        const store = mockStore(default_state, expectedActions, done);
+        store.dispatch(ScenesActions.getUserSceneIds("1"));
+
+      });
+
+    });
+
+    describe('ScenesActions.getSceneBriefs construction and async', function() {
+
+      it('should dispatch GET_SCENE_BRIEFS with provided scenes \n \t \t and dispatch UPDATE_SCENE_BRIEFS upon successful fetch', function(done){
+
+          var intercept = nock("http://127.0.0.1:3002")
+                          .get("/api/getSceneBriefs")
+                          .reply(200, sceneBriefs);
+          const getState = {user: [1, 2, 3]}
+
+          const scenes = [1, 2, 3];
+
+          const expectedActions = [{type: 'GET_SCENE_BRIEFS', ids: scenes},
+                                    {type: "UPDATE_SCENE_BRIEFS", sceneBriefs: sceneBriefs}];
+          const store = mockStore(getState, expectedActions, done);
+          store.dispatch(ScenesActions.getSceneBriefs(scenes));
+
+      });
+
+      it('should dispatch GET_SCENE_BRIEFS and \n \t \t then GET_SCENE_BRIEFS_FAILED with error on failed fetch', function(done) {
+
+        var intercept = nock("http://127.0.0.1:3002")
+                        .get("/api/getSceneBriefs")
+                        .reply(401);
+
+        const getState = {user: [1,2,3]}
+
+        const expectedActions = [{ type: 'GET_SCENE_BRIEFS', ids: getState.user},
+                                 { type: 'GET_SCENE_BRIEFS_FAILED', error: new Error('Bad response from server') }];
         const store = mockStore(getState, expectedActions, done);
-        store.dispatch(ScenesActions.getUserSceneIds(userId));
+        store.dispatch(ScenesActions.getSceneBriefs(getState.user));
+      });
+
+    });
+
+    describe('ScenesActions.getScene construction and async', function() {
+
+      it('should dispatch GET_SCENE with provided scene and \n \t \t dispatch UPDATE_SCENE on successful fetch', function(done) {
+
+        var intercept = nock("http://127.0.0.1:3002")
+                        .get("/api/getScene/1")
+                        .reply(200, sceneData[1]);
+        const getState = {user: [1,2,3], 1: sceneBriefs[1]};
+
+        const expectedActions = [ { type: 'GET_SCENE', sceneId: 1 },
+                                  { type: 'UPDATE_SCENE', scene: sceneData[1] }]
+
+        const store = mockStore(getState, expectedActions, done);
+        store.dispatch(ScenesActions.getScene(1));
+      });
+
+      it('should dispatch GET_SCENE with provided scene and \n \t \t dispatch GET_SCENE_FAILED on failed fetch', function(done) {
+
+        var intercept = nock("http://127.0.0.1:3002")
+                        .get("/api/getScene/1")
+                        .reply(401);
+
+        const getState = {user: [1,2,3], 1: sceneBriefs[1]};
+
+        const expectedActions = [ { type: 'GET_SCENE', sceneId: 1},
+                                  { type: 'GET_SCENE_FAILED', error: new Error('Bad response from server')} ];
+        const store = mockStore(getState, expectedActions, done);
+        store.dispatch(ScenesActions.getScene(1));
+
+
+      });
+    });
+
+    describe('SceneActions.createScene construction and async', function() {
+
+      it('should dispatch CREATE_SCENE with userId and name'
+       + '\n \t \t and dispatch SCENE_CREATED on successful post'
+       + '\n \t \t and dispatch GET_SCENE with received sceneId'
+       + '\n \t \t abd dispatch UPDATE_SCENE with received scene data on successful fetch'
+       , function(done) {
+
+        var intercept = nock("http://127.0.0.1:3002")
+                        .post("/api/createScene")
+                        .reply(200, { sceneId: sceneBriefs[2].id });
+
+        var intercept2 = nock("http://127.0.0.1:3002")
+                          .get("/api/getScene/" + sceneBriefs[2].id)
+                          .reply(200, sceneBriefs[2]);
+
+        const getState = {user: [1, 2, 3], 1: sceneData[1]};
+
+        const expectedActions = [ { type: 'CREATE_SCENE',
+                                    userId: sceneBriefs[2].created_by_user,
+                                    name: sceneBriefs[2].name
+                                  },
+                                  { type: 'SCENE_CREATED',
+                                    sceneId: sceneBriefs[2].id},
+                                  { type: 'GET_SCENE',
+                                    sceneId: sceneBriefs[2].id},
+                                  { type: 'UPDATE_SCENE',
+                                    scene: sceneBriefs[2]}
+                                  ]
+        const store = mockStore(getState, expectedActions, done);
+        store.dispatch(ScenesActions.createScene(sceneBriefs[2].created_by_user, sceneBriefs[2].name));
+
+
+      });
+
+
+      it('should dispatch CREATE_SCENE with userId and name \n \t \t+ dispatch CREATE_SCENE_FAILED on post fail', function(done) {
+
+        var intercept = nock("http://127.0.0.1:3002")
+                        .post("/api/createScene")
+                        .reply(401);
+
+        const getState = {user: [1, 2, 3], 1: sceneData[1]};
+
+        const expectedActions = [ { type: 'CREATE_SCENE',
+                                    userId: sceneBriefs[2].created_by_user,
+                                    name: sceneBriefs[2].name},
+                                  { type: 'CREATE_SCENE_FAILED',
+                                    error: new Error('Bad response from server')}];
+
+        const store = mockStore(getState, expectedActions, done);
+        store.dispatch(ScenesActions.createScene(sceneBriefs[2].created_by_user, sceneBriefs[2].name));
+
 
       });
 
@@ -120,9 +258,152 @@ describe('Scene Redux', function() {
         user: [1, 2, 3]
       });
 
+    });
+
+    it('handles GET_USER_SCENE_IDS_FAILED', function() {
+
+      expect(reducer({
+        user: ["fetching"]
+      }, {type: 'GET_USER_SCENE_IDS_FAILED',
+          error: 'error'}))
+      .toEqual({
+        user: []
+      });
+    });
+
+    it('handles GET_SCENE_BRIEFS', function() {
+
+      expect(reducer([], {
+        type: 'GET_SCENE_BRIEFS',
+        ids: [1,2,3]
+      })).toEqual({
+        1: "fetching",
+        2: "fetching",
+        3: "fetching"
+      });
 
     });
 
+    it('handles UPDATE_SCENE_BRIEFS', function() {
+
+      expect(reducer([], {
+        type: 'UPDATE_SCENE_BRIEFS',
+        sceneBriefs: sceneBriefs
+      })).toEqual({
+        1: { id: 1,
+             name: "#PlatformCoop",
+             created_by_user: "389880004"},
+        2: { id: 2,
+             name: "#NYCGA",
+             created_by_user: "389880004"},
+        3: { id: 3,
+             name: "#PlatformCoop2",
+             created_By_user: "389880004"}
+      });
+    });
+
+    it('handles GET_SCENE_BRIEFS_FAILED', function() {
+
+      expect(reducer({
+                1: "fetching",
+                2: "fetching",
+                3: "fetching",
+                4: { id: 4,
+                     name: "ooh a fourth one",
+                     created_by_user: "389880004"}
+              }, {
+                type: 'GET_SCENE_BRIEFS_FAILED',
+                error: new Error('error')}
+      )).toEqual({
+        4: { id: 4,
+             name: "ooh a fourth one",
+             created_by_user: "389880004"}
+      });
+    });
+
+    it('handles GET_SCENE', function() {
+
+      expect(reducer({
+              1: sceneData[1]
+      }, { type: 'GET_SCENE',
+           sceneId: 2}
+      )).toEqual({
+        1: sceneData[1],
+        2: "fetching"
+      });
+    });
+
+    it('handles UPDATE_SCENE', function() {
+
+      expect(reducer({
+        1: sceneData[1],
+        2: "fetching"
+      }, { type: 'UPDATE_SCENE',
+           scene: sceneData[2]}
+      )).toEqual({
+        1: sceneData[1],
+        2: sceneData[2]
+      });
+
+    });
+
+    it('handles GET_SCENE_FAILED', function() {
+
+      expect(reducer({
+        1: sceneData[1],
+        2: "fetching"
+      }, { type: 'GET_SCENE_FAILED',
+           error: new Error('whoops')}
+      )).toEqual({
+        1: sceneData[1]
+      });
+
+    });
+
+    it('handles CREATE_SCENE', function() {
+
+      expect(reducer({
+        1: sceneData[1]
+      }, { type: 'CREATE_SCENE',
+           userId: sceneData[2].created_by_user,
+           name: sceneData[2].name}
+      )).toEqual({
+        1: sceneData[1]
+      });
+
+      ///so this doesn't really do anything right now...
+
+    });
+
+    it('handles SCENE_CREATED', function() {
+
+      expect(reducer({
+        1: sceneData[1],
+        user: [1]
+      }, { type: 'SCENE_CREATED',
+           sceneId: "2"}
+      )).toEqual({
+        1: sceneData[1],
+        user: [1, 2]
+      });
+
+    });
+
+    it('handles CREATE_SCENE_FAILED', function() {
+
+      expect(reducer({
+        1: sceneData[1],
+        user: [1]
+      }, { type: 'CREATE_SCENE_FAILED',
+           error: new Error('whoops')}
+      )).toEqual({
+        1: sceneData[1],
+        user: [1]
+      });
+
+      //this also doesn't really do anything right now
+
+    });
 
   });
 

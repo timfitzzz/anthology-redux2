@@ -12,7 +12,7 @@ const middlewareBuilder = () => {
   let middleware = {};
   let universalMiddleware = [thunk,promiseMiddleware];
   let allComposeElements = [];
-  
+
   if(process.browser){
     if(process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test'){
       middleware = applyMiddleware(...universalMiddleware);
@@ -43,7 +43,10 @@ const middlewareBuilder = () => {
 
 }
 
-const finalCreateStore = compose(...middlewareBuilder())(createStore);
+const finalCreateStore = compose(
+  ...middlewareBuilder(),
+  typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
+)(createStore);
 
 export default function configureStore(initialState) {
   const store = finalCreateStore(rootReducer, initialState);

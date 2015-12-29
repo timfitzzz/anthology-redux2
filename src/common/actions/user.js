@@ -22,8 +22,7 @@ export function authorizeTwitter() {
           //window.history.pushState(null, null, '/')
         } else if (data === {}) {
 
-        } else {
-          console.log(data);
+        } else {ß
           handleError()
         }
       })

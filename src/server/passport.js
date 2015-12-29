@@ -80,7 +80,7 @@ function loginOrCreateNewUserAndLogin(token, profile, done) {
 function createNewTwitterUser(profile, token) {
   console.log('creating new Twitter user: ' + profile.username);
   var newUser = new User();
-  newUser.id = Users.
+  //newUser.id = Users.
   newUser.accounts = {};
   newUser.accounts.twitter = _.assign({}, profile);
   if (profile.photos.length > 0) {

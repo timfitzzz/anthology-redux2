@@ -10,17 +10,21 @@ class UserHome extends Component {
     super(props);
   }
 
-  // componentDidMount() {
-  //   const { selectedReddit } = this.props;
-  //   this.props.fetchPostsIfNeeded(selectedReddit);
-  // }
-  //
+  componentWillMount() {
+    const { scenes } = this.props;
+    this.props.getUserSceneIds(this.props.user._id);
+  }
+
   // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.selectedReddit !== this.props.selectedReddit) {
-  //     const { selectedReddit } = nextProps;
-  //     this.props.fetchPostsIfNeeded(selectedReddit);
+  //   console.log(nextProps.scenes.user);
+  //   if (this.props.scenes.user.length === 1 && nextProps.scenes.user.length > 1) {
+  //     console.log('last props user length = ' + this.props.scenes.user.length + " and next is" + nextProps.scenes.user.lengthß)
+  //     this.props.dispatch(this.props.getSceneBriefs(nextProps.scenes.user));
+  //   } else {
+  //     console.log("user length is " +nextProps.scenes.user.length)
   //   }
   // }
+
   //
   // handleChange(nextReddit) {
   //   this.props.selectReddit(nextReddit);
@@ -48,6 +52,7 @@ class UserHome extends Component {
 UserHome.propTypes = {
   scenes: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
+  userScenes: PropTypes.array.isRequired
 };
 
 export default UserHome;

@@ -41,13 +41,17 @@ class Header extends Component {
     }
     else {
       return <div className="user-controls">
-        <button>Logged in: {"@" + this.props.user.accounts.twitter.username}</button>
+        <button onClick={this.logoutUser}>{"Click to log out @" + this.props.user.accounts.twitter.username}</button>
       </div>
     }
   }
 
   sendToTwitter() {
     location.href="/auth/twitter"
+  }
+
+  logoutUser() {
+    location.href="/logout"
   }
 
   authTwitter() {

@@ -60,10 +60,11 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 // add cookieparser for auth
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(morgan('dev')); // log every request to the console
-app.use(bodyParser.json()); // get information from html forms
+ // get information from html forms
 
 // passport init
 var passport = require('./passport')(app);
@@ -75,6 +76,10 @@ app.get('/auth/twitter/callback',
     failureRedirect: '/login',
     session: true
 }));
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/');
+});
 app.get('/profile', function(req, res) {
   const response = req.user ? req.user : {}
   console.log('res -- profile', response)

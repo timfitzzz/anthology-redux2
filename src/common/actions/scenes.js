@@ -66,11 +66,15 @@ export function getUserSceneIds(userId) {
   };
 }
 export function updateUserSceneIds(userId, sceneIds) {
-  return {
+  return dispatch => {
+
+  dispatch({
       type: UPDATE_USER_SCENE_IDS,
       userId: userId,
       userScenes: sceneIds
-    };
+    });
+    dispatch(getSceneBriefs(sceneIds));
+  }
 }
 
 // getSceneBriefs: sceneIds (Array) -> [{sceneBrief}] -> updateSceneBriefs
@@ -84,6 +88,11 @@ export function getSceneBriefs(ids) {
 
     return fetch('http://127.0.0.1:3002/api/getSceneBriefs', {
       credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'post',
       body: JSON.stringify({
         ids: ids
       })
@@ -117,10 +126,10 @@ export function getSceneBriefs(ids) {
     }
   };
 }
-export function updateSceneBriefs(sceneBriefs) {
+export function updateSceneBriefs(data) {
   return {
     type: UPDATE_SCENE_BRIEFS,
-    sceneBriefs: sceneBriefs
+    sceneBriefs: data
   };
 }
 

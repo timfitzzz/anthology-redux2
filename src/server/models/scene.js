@@ -5,7 +5,8 @@ var sceneSchema = new Schema({
   name: String,
   documents: [{}],
   created_by_user: String,
-  created_at: Date
+  created_at: Date,
+  geo: String,
 });
 
 var Scene = mongoose.model('Scene', sceneSchema);

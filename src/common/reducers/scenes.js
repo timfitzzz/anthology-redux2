@@ -50,7 +50,7 @@ export default function scenes(state = {
     case UPDATE_SCENE_BRIEFS:
       var newState = Object.assign({}, state, {});
       _.map(action.sceneBriefs, function(sceneBrief) {
-        newState[sceneBrief.id] = sceneBrief
+        newState[sceneBrief._id] = sceneBrief
       });
       return newState;
     case GET_SCENE_BRIEFS_FAILED:

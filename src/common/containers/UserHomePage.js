@@ -5,16 +5,19 @@ import * as ScenesActions from '../actions/scenes';
 import UserHome from '../components/UserHome';
 
 UserHome.need = [
-  ScenesActions.getUserSceneIds,
   ScenesActions.getSceneBriefs
 ]
 
 var mapStateToProps = function(state) {
 
   let scenes = state.scenes.present;
+  let userScenes = state.scenes.present.user;
   let user = state.user;
 
+  console.log(userScenes);
+
   return {
+    userScenes,
     scenes,
     user
   }

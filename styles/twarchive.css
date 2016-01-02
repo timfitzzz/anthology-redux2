@@ -1,0 +1,41 @@
+.scene-list {
+
+
+}
+
+.scene-list-item {
+
+  display: inline-flex;
+
+  border: 1px dotted lightgray;
+  overflow: auto;
+  width: 100%;
+
+}
+
+.list-item-title {
+
+  margin: auto 5px;
+  clear: left;
+  float: left;
+  width: 50%;
+
+}
+
+.list-item-dates {
+
+    margin: auto 5px;
+  float: left;
+  font-size: .5em;
+    vertical-align: bottom;
+    width: 25%;
+
+}
+
+.list-item-created-at {
+
+    margin: auto 5px;
+  float: right;
+  font-size: .5em;
+  width: 25%;
+}

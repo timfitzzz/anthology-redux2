@@ -3,6 +3,7 @@ import User from '../models/user'
 import Scene from '../models/scene'
 var util = require('util');
 import _ from 'underscore';
+import async from 'async';
 
 export function initApiRouter(app) {
 
@@ -16,7 +17,7 @@ export function initApiRouter(app) {
     } else {
       if (userId === req.user.id) {  // only shows user's own scenes until consent-based sharing implemented
         Scene.find({created_by_user: userId}).then( function(response) {
-          res.send(_.map(response, function(scene) { return scene.id }));
+          res.send( { userScenes: _.map(response, function(scene) { return scene.id })});
         });
       } else {
         res.sendStatus(403);
@@ -41,25 +42,28 @@ export function initApiRouter(app) {
     }
   });
 
-  app.post('/api/getSceneBriefs', function(req, res) {
+  app.post('/api/getSceneBriefs', function(req, res) { // async.parallel: http://tech.labelleassiette.fr/async-js-and-mongoose-query/
     if (!req.isAuthenticated()) {
-      res.sendStatus(401)
+      res.sendStatus(401);
     } else {
-      var sceneBriefs = [];
-      req.body.ids.map(function(id, index) {
-        if (index < (ids.length - 1)) {
-          Scene.find({id: id}).then( function(response) {
-            sceneBriefs.push(response);
-          });
-        } else {
-          Scene.find({id: id}).then( function(response) {
-            sceneBriefs.push(response);
+      console.log(req);
+      var ids = req.body.ids;
+      console.log(ids);
+      var sceneBriefs = {};
+      var counter = 0;
+      console.log("loading " + ids.length  + " scenes in brief");
+      var queryMap = _.map(ids, function(id) {
+        Scene.find({'_id': id}).then( function(response) {
+          sceneBriefs[id] = response[0];
+          counter++;
+          if (counter === ids.length) {
+            console.log("loaded " + (queryMap.length + 1) + " scenes in brief.");
             res.send(sceneBriefs);
-          });
-        }
+          }
+        });
+
       });
     }
-
   });
 
   app.post('/api/createScene', function(req, res) {

@@ -86,18 +86,18 @@ app.get('/profile', function(req, res) {
   return res.send(response);
 });
 /* this is for debugging session data */
-app.use(function(req, res, next) {
-    console.log('-- session --');
-    console.dir(req.session);
-    console.log('-------------');
-    console.log('-- cookies --');
-    console.dir(req.cookies);
-    console.log('-------------');
-    console.log('-- signed cookies --');
-    console.dir(req.signedCookies);
-    console.log('-------------');
-    next()
-  });
+// app.use(function(req, res, next) {
+//     console.log('-- session --');
+//     console.dir(req.session);
+//     console.log('-------------');
+//     console.log('-- cookies --');
+//     console.dir(req.cookies);
+//     console.log('-------------');
+//     console.log('-- signed cookies --');
+//     console.dir(req.signedCookies);
+//     console.log('-------------');
+//     next()
+//   });
 
 // initialize API routes
 import { initApiRouter } from './api/apiRoutes';

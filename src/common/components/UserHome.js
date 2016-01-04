@@ -42,7 +42,7 @@ class UserHome extends Component {
     return (
       <div>
         <UserHomeControls createScene={createScene}/>
-        <SceneList scenes={scenes} user={user}/>
+        <SceneList scenes={scenes} user={user} handlers={{deleteScene: this.props.deleteScene}}/>
       </div>
 
     );

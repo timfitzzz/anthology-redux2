@@ -39,3 +39,18 @@
   font-size: .5em;
   width: 25%;
 }
+
+.deleting {
+  opacity: .5;
+}
+
+.edit-button {
+  font-size: .8em;
+  color: green;
+  margin-right: 5%;
+}
+
+.delete-button {
+  font-size: .8em;
+  color: red;
+}

@@ -2,7 +2,8 @@ import {
   GET_USER_SCENE_IDS, GET_USER_SCENE_IDS_FAILED, UPDATE_USER_SCENE_IDS, // users' scenes
   GET_SCENE_BRIEFS, GET_SCENE_BRIEFS_FAILED, UPDATE_SCENE_BRIEFS, // scenes in brief
   GET_SCENE, GET_SCENE_FAILED, UPDATE_SCENE, // scenes in full
-  CREATE_SCENE, SCENE_CREATED, CREATE_SCENE_FAILED
+  CREATE_SCENE, SCENE_CREATED, CREATE_SCENE_FAILED, // scene creation
+  DELETE_SCENE, SCENE_DELETED, DELETE_SCENE_FAILED // scene deletion
 } from '../actions/scenes.js'
 import _ from 'underscore'
 
@@ -80,6 +81,21 @@ export default function scenes(state = {
     case SCENE_CREATED:
       var newState = Object.assign({}, state, {});
       newState.user.push(action.sceneId);
+      return newState;
+    case DELETE_SCENE:
+      var newState = Object.assign({}, state, {});
+      newState[action.sceneId].deleting = true;
+      return newState;
+    case SCENE_DELETED:
+      var newState = Object.assign({}, state, {});
+      // remove from scenes
+      delete newState[action.sceneId];
+      // remove from user scene list
+      newState.user = _.without(newState.user, action.sceneId);
+      return newState;
+    case DELETE_SCENE_FAILED:
+      var newState = Object.assign({}, state, {});
+      delete newState[action.sceneId].deleting;
       return newState;
     default:
       return state

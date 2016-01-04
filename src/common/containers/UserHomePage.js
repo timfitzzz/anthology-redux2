@@ -14,8 +14,6 @@ var mapStateToProps = function(state) {
   let userScenes = state.scenes.present.user;
   let user = state.user;
 
-  console.log(userScenes);
-
   return {
     userScenes,
     scenes,

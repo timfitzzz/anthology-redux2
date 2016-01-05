@@ -26,28 +26,28 @@ var default_state = {
 var userScenes = [1, 2, 3];
 
 var sceneBriefs = {
-  1: {id: 1,
+  1: {_id: 1,
       name: "#PlatformCoop",
       created_by_user: "389880004"},
-  2: { id: 2,
+  2: { _id: 2,
        name: "#NYCGA",
        created_by_user: "389880004"},
-  3: { id: 3,
+  3: { _id: 3,
       name: "#PlatformCoop2",
        created_By_user: "389880004"}};
 
 var sceneData = {
-   1: { id: 1,
+   1: { _id: 1,
         name: "#PlatformCoop",
         documents: [{ type: 'twitter', content: { tweet_data: "tweet"}},
                     { type: 'twitter', content: { tweet_data: "tweet"}}],
         created_by_user: "389880004" },
-   2: { id: 2,
+   2: { _id: 2,
          name: "#NYCGA",
         documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
                     { type: 'twitter', content: { tweet_data: "tweet" }}],
         created_by_user: "389880004" },
-   3: { id: 3,
+   3: { _id: 3,
          name: "#PlatformCoop",
         documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
                     { type: 'twitter', content: { tweet_data: "tweet" }}],
@@ -69,14 +69,23 @@ describe('Scene Redux', function() {
     describe('ScenesActions.getUserSceneIds(1) construction and async', function() {
 
 
-      it('should dispatch GET_USER_SCENE_IDS for user 1, \n \t \t then UPDATE_USER_SCENE_IDS on successful fetch', (done) => {
+      it('should dispatch GET_USER_SCENE_IDS, ' +
+         '\n \t \t then UPDATE_USER_SCENE_IDS ' +
+         '\n \t \t then GET_SCENE_BRIEFS ' +
+         '\n \t \t then UPDATE_SCENE_BRIEFS on successful fetch', (done) => {
 
         var intercept = nock("http://127.0.0.1:3002")
-                        .get("/api/getUserSceneIds/1")
+                        .post("/api/getUserSceneIds")
                         .reply(200, { userScenes });
 
+        var intercept2 = nock("http://127.0.0.1:3002")
+                        .post("/api/getSceneBriefs")
+                        .reply(200, sceneBriefs);
+
         const expectedActions = [{ type: 'GET_USER_SCENE_IDS', userId: "1" },
-                                 { type: 'UPDATE_USER_SCENE_IDS', userId: "1", userScenes }];
+                                 { type: 'UPDATE_USER_SCENE_IDS', userId: "1", userScenes },
+                                 { type: 'GET_SCENE_BRIEFS', ids: [1, 2, 3]},
+                                 { type: 'UPDATE_SCENE_BRIEFS', sceneBriefs: sceneBriefs}];
 
         const store = mockStore(default_state, expectedActions, done);
         store.dispatch(ScenesActions.getUserSceneIds("1"));
@@ -87,7 +96,7 @@ describe('Scene Redux', function() {
       it('should dispatch GET_USER_SCENE_IDS for user 1, \n \t \t then GET_USER_SCENE_IDS_FAILED on failed fetch', (done) => {
 
         var intercept = nock("http://127.0.0.1:3002")
-                        .get("/api/getUserSceneIds/1")
+                        .post("/api/getUserSceneIds")
                         .reply(401)
 
         const expectedActions = [{ type: 'GET_USER_SCENE_IDS', userId: "1" },
@@ -105,7 +114,7 @@ describe('Scene Redux', function() {
       it('should dispatch GET_SCENE_BRIEFS with provided scenes \n \t \t and dispatch UPDATE_SCENE_BRIEFS upon successful fetch', function(done){
 
           var intercept = nock("http://127.0.0.1:3002")
-                          .get("/api/getSceneBriefs")
+                          .post("/api/getSceneBriefs")
                           .reply(200, sceneBriefs);
           const getState = {user: [1, 2, 3]}
 
@@ -121,7 +130,7 @@ describe('Scene Redux', function() {
       it('should dispatch GET_SCENE_BRIEFS and \n \t \t then GET_SCENE_BRIEFS_FAILED with error on failed fetch', function(done) {
 
         var intercept = nock("http://127.0.0.1:3002")
-                        .get("/api/getSceneBriefs")
+                        .post("/api/getSceneBriefs")
                         .reply(401);
 
         const getState = {user: [1,2,3]}
@@ -290,13 +299,13 @@ describe('Scene Redux', function() {
         type: 'UPDATE_SCENE_BRIEFS',
         sceneBriefs: sceneBriefs
       })).toEqual({
-        1: { id: 1,
+        1: { _id: 1,
              name: "#PlatformCoop",
              created_by_user: "389880004"},
-        2: { id: 2,
+        2: { _id: 2,
              name: "#NYCGA",
              created_by_user: "389880004"},
-        3: { id: 3,
+        3: { _id: 3,
              name: "#PlatformCoop2",
              created_By_user: "389880004"}
       });
@@ -308,14 +317,14 @@ describe('Scene Redux', function() {
                 1: "fetching",
                 2: "fetching",
                 3: "fetching",
-                4: { id: 4,
+                4: { _id: 4,
                      name: "ooh a fourth one",
                      created_by_user: "389880004"}
               }, {
                 type: 'GET_SCENE_BRIEFS_FAILED',
                 error: new Error('error')}
       )).toEqual({
-        4: { id: 4,
+        4: { _id: 4,
              name: "ooh a fourth one",
              created_by_user: "389880004"}
       });

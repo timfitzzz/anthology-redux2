@@ -3,4 +3,4 @@ npm-debug.log
 lib
 .DS_Store
 dist
-secrets
+secrets.js

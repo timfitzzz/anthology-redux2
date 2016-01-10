@@ -12,6 +12,10 @@ export const GET_SCENE = 'GET_SCENE';
 export const UPDATE_SCENE = 'UPDATE_SCENE';
 export const GET_SCENE_FAILED = 'GET_SCENE_FAILED';
 
+export const GET_SCENE_DOCS = 'GET_SCENE_DOCS';
+export const UPDATE_SCENE_DOCS = 'UPDATE_SCENE_DOCS';
+export const GET_SCENE_DOCS_FAILED = 'GET_SCENE_DOCS_FAILED';
+
 export const CREATE_SCENE = 'CREATE_SCENE';
 export const SCENE_CREATED = 'SCENE_CREATED';
 export const CREATE_SCENE_FAILED = 'CREATE_SCENE_FAILED';
@@ -22,6 +26,8 @@ export const DELETE_SCENE_FAILED = 'DELETE_SCENE_FAILED';
 
 export const TOGGLE_SCENE_PUBLICITY = 'TOGGLE_SCENE_PUBLICITY';
 
+
+// import Tweet actions
 
 // shared functions
 
@@ -286,6 +292,65 @@ export function sceneDeleted(sceneId) {
     });
   }
 
+}
+
+export function getSceneDocs(sceneId) {
+
+  return dispatch => {
+    dispatch({
+      type: GET_SCENE_DOCS,
+      sceneId
+    });
+
+    fetch('http://127.0.0.1:3002/api/getSceneDocs', {
+      credentials: 'same-origin',
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        sceneId
+      })
+    })
+    .then(checkStatusCode)
+    .then(responseToJson)
+    .then(checkForRejection)
+    .then(data => {
+      console.log(data);
+      if (data.sceneDocs) {
+        dispatch(updateSceneDocs(data.sceneId, data.sceneDocs, data.docs));
+      } else {
+        handleError();
+      }
+    }).catch(handleError)
+
+    function checkForRejection(json) {
+      if (json.failure) {
+        throw new Error('Rejected: ' + json.failure);
+      }
+      return json;
+    }
+
+    function handleError(res) {
+      dispatch({
+        type: GET_SCENE_DOCS_FAILED,
+        sceneId: sceneId,
+        error: res
+      });
+    }
+
+  }
+
+}
+export function updateSceneDocs(sceneId, sceneDocs, docs) {
+
+  return {
+    type: UPDATE_SCENE_DOCS,
+    sceneId,
+    sceneDocs,
+    docs
+  }  
 }
 
 // postToggleScenePublicity: sceneId

@@ -1,8 +1,8 @@
 import React from 'react';
 import addons from 'react/addons';
 import expect from 'expect';
-import request from 'axios';
 import http from 'http';
+import _ from 'underscore';
 
 import thunk from 'redux-thunk';
 import promiseMiddleware from '../../src/common/api/promiseMiddleware';
@@ -39,19 +39,33 @@ var sceneBriefs = {
 var sceneData = {
    1: { _id: 1,
         name: "#PlatformCoop",
-        documents: [{ type: 'twitter', content: { tweet_data: "tweet"}},
-                    { type: 'twitter', content: { tweet_data: "tweet"}}],
+        documents: [{ type: 'tweet', id: "tweet1"},
+                    { type: 'tweet', id: "tweet2"}],
         created_by_user: "389880004" },
    2: { _id: 2,
          name: "#NYCGA",
-        documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
-                    { type: 'twitter', content: { tweet_data: "tweet" }}],
+         documents: [{ type: 'tweet', id: "tweet1"},
+                     { type: 'tweet', id: "tweet2"}],
         created_by_user: "389880004" },
    3: { _id: 3,
          name: "#PlatformCoop",
-        documents: [{ type: 'twitter', content: { tweet_data: "tweet" }},
-                    { type: 'twitter', content: { tweet_data: "tweet" }}],
+         documents: [{ type: 'tweet', id: "tweet1"},
+                     { type: 'tweet', id: "tweet2"}],
         created_by_user: "389880004" }};
+
+var tweets = {
+
+  "tweet1": {
+    text: "this is a tweet",
+    user: "@diceytroop",
+    date: new Date()
+  },
+  "tweet2": {
+    text: "this is also a tweet",
+    user: "@diceytroop",
+    date: new Date()
+  }
+}
 
 describe('Scene Redux', function() {
 
@@ -233,6 +247,64 @@ describe('Scene Redux', function() {
       });
 
     });
+
+    describe('SceneActions.getSceneDocs construction and async', function(done) {
+
+      it('should dispatch GET_SCENE_DOCS with sceneId' +
+          ' \n \t \t and dispatch UPDATE_SCENE_DOCS with sceneId, sceneDocs and docs', function() {
+
+            var intercept = nock("http://127.0.0.1:3002")
+                            .post("/api/getSceneDocs")
+                            .reply({
+                                      sceneId: sceneData[1]._id,
+                                      sceneDocs: sceneData[1].documents,
+                                      docs: _.map(sceneData[1].documents,
+                                                  function(doc) {
+                                                    return tweets[doc.id]
+                                                  })
+                                  });
+
+            const getState = {user: [1, 2, 3], 1: sceneData[1]};
+
+            const expectedActions = [ { type: 'GET_SCENE_DOCS',
+                                        sceneId: sceneData[1]._id},
+                                      { type: 'UPDATE_SCENE_DOCS',
+                                        sceneId: sceneData[1]._id,
+                                        sceneDocs: sceneData[1].documents,
+                                        docs: _.map(sceneData[1].documents,
+                                                  function(doc) {
+                                                    return tweets[doc.id]
+                                                  })                      } ]
+
+            const store = mockStore(getState, expectedActions, done);
+            store.dispatch(ScenesActions.getSceneDocs(sceneData[1]._id));
+
+      });
+
+      it('should dispatch GET_SCENE_DOCS with sceneId' +
+        ' \n \t \t and dispatch GET_SCENE_DOCS_FAILED upon failed fetch', function(done) {
+
+          var intercept = nock("http://127.0.0.1:3002")
+                          .post("/api/getSceneDocs")
+                          .reply(401);
+
+          const getState = {user: [1, 2, 3], 1: sceneData[1]};
+
+          const expectedActions = [ { type: 'GET_SCENE_DOCS',
+                                      sceneId: sceneData[1]._id},
+                                    { type: 'GET_SCENE_DOCS_FAILED',
+                                      sceneId: sceneData[1]._id,
+                                      error: new Error('Bad response from server')}]
+
+          const store = mockStore(getState, expectedActions, done);
+          store.dispatch(ScenesActions.getSceneDocs(sceneData[1]._id));
+
+
+      });
+
+
+
+    })
 
   });
 

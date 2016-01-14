@@ -302,6 +302,74 @@ describe('Scene Redux', function() {
 
       });
 
+    });
+
+    describe('SceneActions.addDocToScene construction and async', function() {
+
+      it('should dispatch ADD_DOC_TO_SCENE with document object, sceneId, document_type, and order_by'
+          + '\n \t \t + dispatch DOC_ADDED_TO_SCENE with document object and sceneId on successful post'
+          + '\n \t \t + dispatch GET_SCENE_DOCS with sceneId'
+          + '\n \t \t + dispatch UPDATE_SCENE_DOCS with sceneId on successful post', function(done) {
+
+            var document_object = {
+               type: 'tweet',
+               id: 'tweet_id',
+               content: {
+                 id: 'tweet_id',
+                 text: 'this is a tweet '
+               }
+             }
+
+
+
+            var intercept = nock("http://127.0.0.1:3002")
+                            .post("/api/addDocToScene")
+                            .reply(200, { sceneId: '4',
+                                          document: document_object,
+                                          document_type: document_object.type,
+                                          order_by: 'default'});
+
+            var intercept2 = nock("http://127.0.0.1:3002")
+                             .post("/api/getSceneDocs")
+                             .reply(200, {
+                                       sceneId: '4',
+                                       sceneDocs: [{type: 'tweet', id: 'tweet_id'}],
+                                       docs: [document_object.content]
+                                   });
+
+            const getState = { user: [1, 2, 3], 1: sceneData[1], 4: { _id: '4', name: 'scene 4', documents: [], created_by_user: 'you know who'}};
+
+            var document_object = {
+               type: 'tweet',
+               id: 'tweet_id',
+               content: {
+                 id: 'tweet_id',
+                 text: 'this is a tweet '
+               }
+             }
+
+
+
+            const expectedActions = [{ type: 'ADD_DOC_TO_SCENE',
+                                       sceneId: '4',
+                                       document: document_object,
+                                       order_by: 'default'},
+                                     { type: 'DOC_ADDED_TO_SCENE',
+                                       sceneId: '4',
+                                       document_type: 'tweet',
+                                       document: document_object,
+                                       order_by: 'default' },
+                                     { type: 'GET_SCENE_DOCS',
+                                       sceneId: '4'},
+                                     { type: 'UPDATE_SCENE_DOCS',
+                                       sceneId: '4',
+                                       sceneDocs: [{ type: 'tweet', id: 'tweet_id'}],
+                                       docs: [document_object.content]}]
+
+            const store = mockStore(getState, expectedActions, done);
+            store.dispatch(ScenesActions.addDocToScene(document_object, '4', "default"));
+
+      });
 
 
     })

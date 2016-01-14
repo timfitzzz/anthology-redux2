@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
+
+// getting data
 export const GET_USER_SCENE_IDS = 'GET_USER_SCENE_IDS';
 export const UPDATE_USER_SCENE_IDS = 'UPDATE_USER_SCENE_IDS';
 export const GET_USER_SCENE_IDS_FAILED = 'GET_USER_SCENE_IDS_FAILED';
@@ -16,6 +18,7 @@ export const GET_SCENE_DOCS = 'GET_SCENE_DOCS';
 export const UPDATE_SCENE_DOCS = 'UPDATE_SCENE_DOCS';
 export const GET_SCENE_DOCS_FAILED = 'GET_SCENE_DOCS_FAILED';
 
+// crud ops
 export const CREATE_SCENE = 'CREATE_SCENE';
 export const SCENE_CREATED = 'SCENE_CREATED';
 export const CREATE_SCENE_FAILED = 'CREATE_SCENE_FAILED';
@@ -23,6 +26,14 @@ export const CREATE_SCENE_FAILED = 'CREATE_SCENE_FAILED';
 export const DELETE_SCENE = 'DELETE_SCENE';
 export const SCENE_DELETED = 'SCENE_DELETED';
 export const DELETE_SCENE_FAILED = 'DELETE_SCENE_FAILED';
+
+export const ADD_DOC_TO_SCENE = 'ADD_DOC_TO_SCENE';
+export const DOC_ADDED_TO_SCENE = 'DOC_ADDED_TO_SCENE';
+export const ADD_DOC_TO_SCENE_FAILED = 'ADD_DOC_TO_SCENE_FAILED';
+
+export const REMOVE_DOC_FROM_SCENE = 'REMOVE_DOC_FROM_SCENE';
+export const DOC_REMOVED_FROM_SCENE = 'DOC_REMOVED_FROM_SCENE';
+export const REMOVE_DOC_FROM_SCENE_FAILED = 'REMOVE_DOC_FROM_SCENE_FAILED';
 
 export const TOGGLE_SCENE_PUBLICITY = 'TOGGLE_SCENE_PUBLICITY';
 
@@ -71,7 +82,6 @@ export function getUserSceneIds(userId) {
           // TODO create more dumb components and move dispatcher to parent -> actionName=dispatch(actionName()) and then child will just call this! :)
           //window.history.pushState(null, null, '/')
         } else {
-          console.log(json);
           handleError();
         }
       })
@@ -258,7 +268,6 @@ export function deleteScene(sceneId) {
     .then(responseToJson)
     .then(checkForRejection)
     .then(data => {
-      console.log(data);
       if (data.confirmation) {
         dispatch(sceneDeleted(data.sceneId))
       } else {
@@ -317,7 +326,6 @@ export function getSceneDocs(sceneId) {
     .then(responseToJson)
     .then(checkForRejection)
     .then(data => {
-      console.log(data);
       if (data.sceneDocs) {
         dispatch(updateSceneDocs(data.sceneId, data.sceneDocs, data.docs));
       } else {
@@ -350,7 +358,78 @@ export function updateSceneDocs(sceneId, sceneDocs, docs) {
     sceneId,
     sceneDocs,
     docs
-  }  
+  }
+}
+
+export function addDocToScene(document_object, sceneId, order_by) {
+
+  return dispatch => {
+    dispatch({
+      type: ADD_DOC_TO_SCENE,
+      document: document_object,
+      sceneId: sceneId,
+      order_by: order_by
+    });
+
+    fetch('http://127.0.0.1:3002/api/addDocToScene', {
+      credentials: 'same-origin',
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        document: document_object,
+        sceneId: sceneId,
+        order_by: order_by
+      })
+    }).then(checkStatusCode)
+    .then(responseToJson)
+    .then(checkForRejection)
+    .then(data => {
+      if (data.document) {
+        dispatch(docAddedToScene(data.sceneId,
+                                 data.document_type,
+                                 data.document,
+                                 data.order_by));
+      }
+      else {
+        handleError();
+      }
+    }).catch(handleError);
+
+      function checkForRejection(json) {
+        if (json.failure) {
+          throw new Error('Rejected: ' + json.failure);
+        }
+        return json;
+      }
+
+      function handleError(res) {
+        dispatch({
+          type: ADD_DOC_TO_SCENE_FAILED,
+          sceneId: sceneId,
+          document: document_object,
+          error: res
+        });
+      }
+
+    }
+}
+export function docAddedToScene(sceneId, document_type, document, order_by) {
+  return dispatch => {
+
+    dispatch({
+      type: DOC_ADDED_TO_SCENE,
+      sceneId,
+      document_type,
+      document,
+      order_by
+    });
+
+    dispatch(getSceneDocs(sceneId));
+
+  }
 }
 
 // postToggleScenePublicity: sceneId

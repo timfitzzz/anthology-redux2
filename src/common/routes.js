@@ -15,6 +15,7 @@ import CounterPage from "./containers/CounterPage";
 import RedditPage from "./containers/RedditPage";
 import TodoPage from "./containers/TodoPage";
 import UserHomePage from "./containers/UserHomePage";
+import ScenePage from "./containers/ScenePage";
 
 //Redux Dumb
 import HomePage from "./components/Home";
@@ -25,6 +26,7 @@ export default (
   <Route name="app" path="/" component={App} onEnter={requireAuth}>
       <Route path="home" component={HomePage} />
       <Route path="userhome" component={UserHomePage} />
+      <Route path="scene/:id" component={ScenePage} />
       <Route path="reddit" component={RedditPage} />
       <Route path="todo" component={TodoPage} />
       <Route path="counter" component={CounterPage} />

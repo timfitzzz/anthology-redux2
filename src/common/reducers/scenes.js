@@ -3,7 +3,8 @@ import {
   GET_SCENE_BRIEFS, GET_SCENE_BRIEFS_FAILED, UPDATE_SCENE_BRIEFS, // scenes in brief
   GET_SCENE, GET_SCENE_FAILED, UPDATE_SCENE, // scenes in full
   CREATE_SCENE, SCENE_CREATED, CREATE_SCENE_FAILED, // scene creation
-  DELETE_SCENE, SCENE_DELETED, DELETE_SCENE_FAILED // scene deletion
+  DELETE_SCENE, SCENE_DELETED, DELETE_SCENE_FAILED, // scene deletion
+  ADD_DOC_TO_SCENE, DOC_ADDED_TO_SCENE, ADD_DOC_TO_SCENE_FAILED // adding docs to scene
 } from '../actions/scenes.js'
 import _ from 'underscore'
 
@@ -11,7 +12,7 @@ import _ from 'underscore'
 // var sceneSchema = new Schema({
 //   id:  Number,
 //   name: String,
-//   documents: [{}], <-- { type: 'twitter' || 'note',
+//   documents: [{}], <-- { type: 'tweet' || 'note',
 //                          content: {document}
 //                        }
 //   created_by_user: String
@@ -96,6 +97,18 @@ export default function scenes(state = {
     case DELETE_SCENE_FAILED:
       var newState = Object.assign({}, state, {});
       delete newState[action.sceneId].deleting;
+      return newState;
+    case ADD_DOC_TO_SCENE:                // TODO: implement loading
+      return state;
+    case ADD_DOC_TO_SCENE_FAILED:         // TODO: implement loading
+      return state;
+    case DOC_ADDED_TO_SCENE:
+      var newState = Object.assign({}, state, {});
+      newState[action.sceneId].documents.push({
+        type: action.type,
+        document: action.document,
+        order_by: action.order_by
+      });
       return newState;
     default:
       return state

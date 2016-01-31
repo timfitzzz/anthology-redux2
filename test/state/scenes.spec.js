@@ -58,12 +58,14 @@ var tweets = {
   "tweet1": {
     text: "this is a tweet",
     user: "@diceytroop",
-    date: new Date()
+    date: new Date(),
+    id: 'tweet1'
   },
   "tweet2": {
     text: "this is also a tweet",
     user: "@diceytroop",
-    date: new Date()
+    date: new Date(),
+    id: 'tweet2'
   }
 }
 
@@ -371,6 +373,37 @@ describe('Scene Redux', function() {
 
       });
 
+      it('should dispatch ADD_DOC_TO_SCENE with document object, sceneId, document_type, and order_by'
+          + '\n \t \t + dispatch ADD_DOC_TO_SCENE_FAILED with unsuccessful post', function(done) {
+
+        var intercept = nock("http://127.0.0.1:3002")
+                        .post("/api/addDocToScene")
+                        .reply(401)
+
+        const getState = {user: [1,2,3], 1: sceneData[1]}
+
+        var document_object = {
+          type: 'tweet',
+          id: 'tweet_id',
+          content: {
+            id: 'tweet_id',
+            text: 'this is a tweet'
+          }
+        }
+
+        const expectedActions = [{ type: 'ADD_DOC_TO_SCENE',
+                                   sceneId: '4',
+                                   document: document_object,
+                                   order_by: 'default'},
+                                 {type: 'ADD_DOC_TO_SCENE_FAILED',
+                                  sceneId: '4',
+                                  document: document_object,
+                                  error: new Error('Bad response from server')}]
+
+        const store = mockStore(getState, expectedActions, done);
+        store.dispatch(ScenesActions.addDocToScene(document_object, '4', "default"));
+      });
+
 
     })
 
@@ -553,6 +586,29 @@ describe('Scene Redux', function() {
       //this also doesn't really do anything right now
 
     });
+
+    it('handles DOC_ADDED_TO_SCENE', function() {
+
+      var newSceneData = Object.assign({}, sceneData[1], {});
+      newSceneData.documents.push({
+        type: 'tweet',
+        document: tweets.tweet1
+      });
+
+      expect(reducer({
+        1: sceneData[1],
+        user: [1]
+      }, { type: 'DOC_ADDED_TO_SCENE',
+           sceneId: 1,
+           type: 'tweet',
+           document: tweets.tweet1,
+           order_by: 'default'}
+         )).toEqual({
+           1: newSceneData,
+           user: [1]
+         });
+
+    })
 
   });
 

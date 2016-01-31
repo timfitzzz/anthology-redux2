@@ -6,6 +6,8 @@ import _ from 'underscore';
 import async from 'async';
 import { checkProcess } from './checkProcess';
 
+import { twit } from '../extapis/twitter'
+
 export function initApiRouter(app) {
 
   // routes for Scenes
@@ -32,11 +34,16 @@ export function initApiRouter(app) {
       res.sendStatus(401)
     } else {
       Scene.findById(req.params.sceneId, function(err, response) {
-        if (response.created_by_user === req.user.id) {
-          res.send(response)
+        if (response) {
+          if (response.created_by_user === req.user.id) {
+            res.send(response)
+          }
+          else {
+            res.sendStatus(403)
+          }
         }
         else {
-          res.sendStatus(403)
+          res.sendStatus(403);
         }
       });
     }
@@ -124,5 +131,33 @@ export function initApiRouter(app) {
 
     }
   });
+
+
+  // TWITTER INTERACTION routes
+
+  app.post('/twitter/search', function(req, res) {
+    // if (!req.isAuthenticated()) {
+    //   res.sendStatus(401);
+    // }
+    // else {
+      var q = req.body.query;
+      var T = twit();
+      console.log(req.body);
+      T.get('search/tweets', {q, count: 100}, function(err, data, response) {
+        if (err) {
+          res.send(response);
+        }
+        else {
+          res.send(data);
+        }
+      });
+    //
+    // }
+
+
+
+  });
+
+
 
 }

@@ -54,3 +54,35 @@
   font-size: .8em;
   color: red;
 }
+
+.scene-header {
+  border: 1px solid;
+  padding: 10px;
+  overflow: auto;
+  width: 100%;
+}
+
+.scene-header-left {
+  float: left;
+  width: 75%;
+}
+
+.scene-header-right {
+  float: right;
+  width: 25%;
+  height: 100%;
+}
+
+.scene-controls {
+  border: 1px dotted;
+  height: 100%;
+}
+
+.scene-name {
+  vertical-align: top;
+  font-weight: bold;
+}
+
+.scene-created-by {
+  font-size: .7em;
+}

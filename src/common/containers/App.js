@@ -35,7 +35,7 @@ class App extends Component {
 
   render() {
 
-    const { user,layout, version, counter, todos } = this.props;
+    const { user, layout, version, counter, todos } = this.props;
     const { sidebarOpen } = layout;
     const layoutClass = classNames('wrapper',{open : sidebarOpen});
 

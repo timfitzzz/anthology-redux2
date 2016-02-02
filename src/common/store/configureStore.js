@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { devTools } from 'redux-devtools';
+import DevTools from '../../server/devtools';
 import { reduxReactRouter } from 'redux-router';
 import thunk from 'redux-thunk';
 import createHistory from 'history/lib/createBrowserHistory';
@@ -29,7 +29,7 @@ const middlewareBuilder = () => {
         reduxReactRouter({
           createHistory
         }),
-        devTools()
+        DevTools.instrument()
       ]
     }
   }else{
@@ -44,8 +44,7 @@ const middlewareBuilder = () => {
 }
 
 const finalCreateStore = compose(
-  ...middlewareBuilder(),
-  typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
+  ...middlewareBuilder()
 )(createStore);
 
 export default function configureStore(initialState) {

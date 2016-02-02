@@ -10,6 +10,13 @@ import SceneHeader from './SceneView/SceneHeader';
 
 class SceneView extends Component {
 
+  get need() {
+    return [
+      { call: this.props.getScene,
+        args: [this.props.sceneId]}
+    ]
+  }
+
   constructor(props) {
     super(props);
   }
@@ -47,5 +54,7 @@ class SceneView extends Component {
   }
 
 }
+
+
 
 export default SceneView;

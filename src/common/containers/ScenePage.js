@@ -4,18 +4,18 @@ import { connect } from 'react-redux';
 import SceneView from '../components/scenes/SceneView';
 import * as ScenesActions from '../actions/scenes';
 
-SceneView.need = [
-]
+var that = this;
 
-
-var mapStateToProps = function(state) {
-  let sceneId = state.router.params.id;
+var mapStateToProps = function(state, ownProps) {
+  let sceneId = ownProps.params.id;
   let scene = state.scenes.present[sceneId];
+  let user = state.user;
   console.log(scene);
 
   return {
     sceneId,
-    scene
+    scene,
+    user
   }
 
 }

@@ -153,15 +153,18 @@ export function updateSceneBriefs(data) {
 
 // getScene: sceneId (String) -> [{scene}] -> updateScene
 // updateScene: [{scene}] -> dispatch('UPDATE_SCENE', {[scene]})
-export function getScene(sceneId) {
+export function getScene(sceneId, cookie) {
   return dispatch => {
     dispatch({
       type: GET_SCENE,
       sceneId: sceneId
     });
 
+    if(cookie){console.log('got cookie, ' +cookie)}
+
     return fetch('http://127.0.0.1:3002/api/getScene/' + sceneId,{
-      credentials: 'same-origin'
+      credentials: 'same-origin',
+      headers: cookie ? {'Set-Cookie': cookie} : undefined
     })
     .then(checkStatusCode)
     .then(responseToJson)

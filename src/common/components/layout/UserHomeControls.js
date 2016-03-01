@@ -5,7 +5,6 @@ class UserHomeControls extends Component {
 
   constructor(props) {
     super(props);
-    console.log(!this.props.createScene ? "no createScene bro" : "createScene is here dammit");
     this.handleClick = this.handleClick.bind(this);
     this.state = {
       new_scene_name: ""

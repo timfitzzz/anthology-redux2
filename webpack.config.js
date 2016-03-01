@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var merge = require('merge');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+var injectLoader = require('inject-loader');
 var webpackConfig = {
   output: {
     path: path.join(__dirname, 'dist'),
@@ -11,7 +11,8 @@ var webpackConfig = {
   },
   plugins: [
     new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoErrorsPlugin(),
+    new webpack.NormalModuleReplacementPlugin( new RegExp("/server/models/scene"), function(){return{ isStub: true }})
   ]
 };
 
@@ -39,8 +40,10 @@ if (process.env.NODE_ENV === 'production') {
         }
       }),
       new ExtractTextPlugin("app.css"),
-      new webpack.optimize.UglifyJsPlugin({minimize: true})
-    ]  
+      new webpack.optimize.UglifyJsPlugin({minimize: true}),
+new webpack.NormalModuleReplacementPlugin( new RegExp("/server/models/scene"), function(){return{ isStub: true }})
+
+    ]
   });
 
 }else{
@@ -86,10 +89,11 @@ if (process.env.NODE_ENV === 'production') {
       './src/client/index.js'
     ],
     plugins : [
+      new webpack.NormalModuleReplacementPlugin( new RegExp("../../server/models/scene"),'../../client/intResourceStub'),
       new webpack.HotModuleReplacementPlugin()
-    ]  
+    ]
   });
-  
+
 }
 
 module.exports = webpackConfig;

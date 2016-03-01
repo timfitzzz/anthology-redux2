@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import SceneView from '../components/scenes/SceneView';
 import * as ScenesActions from '../actions/scenes';
 
+
 var that = this;
 
 var mapStateToProps = function(state, ownProps) {

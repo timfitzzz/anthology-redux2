@@ -11,8 +11,14 @@ class UserHome extends Component {
   }
 
   componentWillMount() {
-    const { scenes } = this.props;
-    this.props.getUserSceneIds(this.props.user._id);
+    const { scenes, userScenes } = this.props;
+    console.log('userScenes is ' + userScenes);
+    if (!userScenes[0]) {
+      console.log("getting user scenes");
+      this.props.getUserSceneIds(this.props.user._id);
+    } else if (userScenes[0] !== "fetching" && userScenes[0] !== "none" && !scenes[userScenes[0]]) {
+      this.props.getSceneBriefs(userScenes);
+    }
   }
 
   // componentWillReceiveProps(nextProps) {

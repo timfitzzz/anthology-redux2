@@ -10,7 +10,7 @@ class SceneList extends Component {
     this.state = {
       deleting: []
     }
-    this.handleControl = this.handleControl.bind(this);
+    this.handleControlSelection = this.handleControlSelection.bind(this);
   }
 
 
@@ -18,7 +18,8 @@ class SceneList extends Component {
     var deleting = this.state.deleting;
     for (var scene in this.state.deleting) {
       if (!this.props.scenes[scene].deleting) {
-        deleting = deleting.slice(deleting.indexOf(scene), 1)
+        deleting = deleting.slice(deleting.indexOf(scene), 1);
+        console.log('deleting is ' + deleting + 'as of prop receipt');
       }
     }
     this.setState({
@@ -53,14 +54,19 @@ class SceneList extends Component {
   renderItemControls(sceneId) {
     return(
       <div className="list-item-controls">
-        <a className="edit-button" onClick={this.handleControl("edit", sceneId)}>Edit</a>
-        <a className="delete-button" onClick={this.handleControl("delete", sceneId)}>Delete</a>
+        <a className="edit-button" onClick={this.handleControlSelection("edit", sceneId)}>Edit</a>
+        <a className="delete-button" onClick={this.handleControlSelection("delete", sceneId)}>Delete</a>
       </div>
     )
   }
 
-  handleControl(type, sceneId) {
-    var deleting = this.state.deleting.slice();
+  handleControlSelection(type, sceneId) {
+    var deleting = this.state.deleting;
+    // if (this.state.deleting !== []) {
+    //   deleting = this.state.deleting.slice();
+    // }
+
+    debugger;
     var that = this;
     switch (type) {
       case 'edit':

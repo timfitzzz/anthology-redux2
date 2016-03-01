@@ -419,10 +419,10 @@ describe('Scene Redux', function() {
       });
     });
 
-    it('handles GET_USER_SCENE_IDS', function() {
+    it('handles GET_USER_SCENE_IDS_REQUEST', function() {
 
       expect(reducer([], {
-        type: 'GET_USER_SCENE_IDS',
+        type: 'GET_USER_SCENE_IDS_REQUEST',
         userId: 1
       })).toEqual({
         user: ["fetching"]
@@ -430,10 +430,10 @@ describe('Scene Redux', function() {
 
     });
 
-    it('handles UPDATE_USER_SCENE_IDS', function() {
+    it('handles GET_USER_SCENE_IDS_SUCCESS', function() {
 
       expect(reducer([], {
-        type: 'UPDATE_USER_SCENE_IDS',
+        type: 'GET_USER_SCENE_IDS_SUCCESS',
         userId: 1,
         userScenes: [1, 2, 3]
       })).toEqual({
@@ -453,10 +453,10 @@ describe('Scene Redux', function() {
       });
     });
 
-    it('handles GET_SCENE_BRIEFS', function() {
+    it('handles GET_SCENE_BRIEFS_REQUEST', function() {
 
       expect(reducer([], {
-        type: 'GET_SCENE_BRIEFS',
+        type: 'GET_SCENE_BRIEFS_REQUEST',
         ids: [1,2,3]
       })).toEqual({
         1: "fetching",
@@ -466,10 +466,10 @@ describe('Scene Redux', function() {
 
     });
 
-    it('handles UPDATE_SCENE_BRIEFS', function() {
+    it('handles GET_SCENE_BRIEFS_SUCCESS', function() {
 
       expect(reducer([], {
-        type: 'UPDATE_SCENE_BRIEFS',
+        type: 'GET_SCENE_BRIEFS_SUCCESS',
         sceneBriefs: sceneBriefs
       })).toEqual({
         1: { _id: 1,
@@ -503,11 +503,11 @@ describe('Scene Redux', function() {
       });
     });
 
-    it('handles GET_SCENE', function() {
+    it('handles GET_SCENE_REQUEST', function() {
 
       expect(reducer({
               1: sceneData[1]
-      }, { type: 'GET_SCENE',
+      }, { type: 'GET_SCENE_REQUEST',
            sceneId: 2}
       )).toEqual({
         1: sceneData[1],
@@ -515,7 +515,7 @@ describe('Scene Redux', function() {
       });
     });
 
-    it('handles UPDATE_SCENE', function() {
+    it('handles GET_SCENE_SUCCESS', function() {
 
       expect(reducer({
         1: sceneData[1],
@@ -542,11 +542,11 @@ describe('Scene Redux', function() {
 
     });
 
-    it('handles CREATE_SCENE', function() {
+    it('handles CREATE_SCENE_REQUEST', function() {
 
       expect(reducer({
         1: sceneData[1]
-      }, { type: 'CREATE_SCENE',
+      }, { type: 'CREATE_SCENE_REQUEST',
            userId: sceneData[2].created_by_user,
            name: sceneData[2].name}
       )).toEqual({
@@ -557,12 +557,12 @@ describe('Scene Redux', function() {
 
     });
 
-    it('handles SCENE_CREATED', function() {
+    it('handles CREATE_SCENE_SUCCESS', function() {
 
       expect(reducer({
         1: sceneData[1],
         user: [1]
-      }, { type: 'SCENE_CREATED',
+      }, { type: 'CREATE_SCENE_SUCCESS',
            sceneId: "2"}
       )).toEqual({
         1: sceneData[1],
@@ -587,7 +587,7 @@ describe('Scene Redux', function() {
 
     });
 
-    it('handles DOC_ADDED_TO_SCENE', function() {
+    it('handles ADD_DOC_TO_SCENE_SUCCESS', function() {
 
       var newSceneData = Object.assign({}, sceneData[1], {});
       newSceneData.documents.push({
@@ -598,7 +598,7 @@ describe('Scene Redux', function() {
       expect(reducer({
         1: sceneData[1],
         user: [1]
-      }, { type: 'DOC_ADDED_TO_SCENE',
+      }, { type: 'ADD_DOC_TO_SCENE_SUCCESS',
            sceneId: 1,
            type: 'tweet',
            document: tweets.tweet1,

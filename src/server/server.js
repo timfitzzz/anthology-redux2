@@ -101,7 +101,7 @@ app.use(function(req, res, next) {
   });
 
 // initialize API routes
-import { initApiRouter } from './api/apiRoutes';
+import { initApiRouter } from './routes/apiRoutes';
 initApiRouter(app);
 
 // pretty sure this isn't in use.
@@ -150,25 +150,36 @@ app.get('/*', function (req, res) {
     if(!renderProps)
       return res.status(404).end('Not found');
 
-    const store = configureStore({user : req.user, version : packagejson.version});
+    const store = configureStore({user : req.user});
     const InitialView = (
       <Provider store={store}>
           <RoutingContext {...renderProps} />
       </Provider>
     );
 
-    //This method waits for all render component promises to resolve before returning to browser
-    fetchComponentDataBeforeRender(store.dispatch, renderProps.components, renderProps.params, req.headers.cookie)
-      .then(html => {
-        const componentHTML = ReactDOMServer.renderToString(InitialView);
-        const initialState = store.getState();
-        var pageToSend = renderFullPage(componentHTML, initialState);
-        res.status(200).end(pageToSend);
-      })
-      .catch(err => {
-        console.log("Error on render: " + err)
-        res.status(400).end(renderFullPage("",{}))
-      });
+    store.renderToString(React, InitialView).done( html => {
+      var pageToSend = renderFullPage(html, store.getState());
+      console.log()
+      res.status(200).end(pageToSend);
+    })
+    // .catch(err => {
+    //   console.log("Error on render: " + err);
+    //   res.status(400).end(renderFullPage("", {}));
+    // })
+
+    // //This method waits for all render component promises to resolve before returning to browser
+    // fetchComponentDataBeforeRender(store.dispatch, renderProps.components, renderProps.params)
+    //   .then(html => {
+    //     const componentHTML = ReactDOMServer.renderToString(InitialView);
+    //     const initialState = store.getState();
+    //     // console.log('initial state: ' + JSON.stringify(initialState))
+    //     var pageToSend = renderFullPage(componentHTML, initialState);
+    //     res.status(200).end(pageToSend);
+    //   })
+    //   .catch(err => {
+    //     console.log("Error on render: " + err)
+    //     res.status(400).end(renderFullPage("",{}))
+    //   });
   });
 
 });

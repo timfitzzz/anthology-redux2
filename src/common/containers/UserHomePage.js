@@ -4,9 +4,6 @@ import { connect } from 'react-redux';
 import * as ScenesActions from '../actions/scenes';
 import UserHome from '../components/UserHome';
 
-UserHome.need = [
-  ScenesActions.getSceneBriefs
-]
 
 var mapStateToProps = function(state) {
 

@@ -1,10 +1,10 @@
 import {
-  GET_USER_SCENE_IDS, GET_USER_SCENE_IDS_FAILED, UPDATE_USER_SCENE_IDS, // users' scenes
-  GET_SCENE_BRIEFS, GET_SCENE_BRIEFS_FAILED, UPDATE_SCENE_BRIEFS, // scenes in brief
-  GET_SCENE, GET_SCENE_FAILED, UPDATE_SCENE, // scenes in full
-  CREATE_SCENE, SCENE_CREATED, CREATE_SCENE_FAILED, // scene creation
-  DELETE_SCENE, SCENE_DELETED, DELETE_SCENE_FAILED, // scene deletion
-  ADD_DOC_TO_SCENE, DOC_ADDED_TO_SCENE, ADD_DOC_TO_SCENE_FAILED // adding docs to scene
+  GET_USER_SCENE_IDS_REQUEST, GET_USER_SCENE_IDS_SUCCESS, GET_USER_SCENE_IDS_FAILURE, // users' scenes
+  GET_SCENE_BRIEFS_REQUEST, GET_SCENE_BRIEFS_SUCCESS, GET_SCENE_BRIEFS_FAILURE, // scenes in brief
+  GET_SCENE_REQUEST, GET_SCENE_SUCCESS, GET_SCENE_FAILURE, // scenes in full
+  CREATE_SCENE_REQUEST, CREATE_SCENE_SUCCESS, CREATE_SCENE_FAILURE, // scene creation
+  DELETE_SCENE_REQUEST, DELETE_SCENE_SUCCESS, DELETE_SCENE_FAILURE, // scene deletion
+  ADD_DOC_TO_SCENE_REQUEST, ADD_DOC_TO_SCENE_SUCCESS, ADD_DOC_TO_SCENE_FAILURE // adding docs to scene
 } from '../actions/scenes.js'
 import _ from 'underscore'
 
@@ -26,22 +26,33 @@ export default function scenes(state = {
   }, action) {
   switch (action.type) {
 
-    case GET_USER_SCENE_IDS:
+    case GET_USER_SCENE_IDS_REQUEST:
       return Object.assign({}, state, {
-          ...state,
-          user: ["fetching"]
+        ...state,
+        user: ["fetching"]
       });
-    case UPDATE_USER_SCENE_IDS:
+    case GET_USER_SCENE_IDS_SUCCESS:
+      var newUserScenes;
+      console.log("user scene success, result is " + JSON.stringify(action));
+      if (!action.req.userScenes[0]) {
+        console.log("no user scenes, setting user to none");
+        newUserScenes = ["none"];
+      }
+      else {
+        console.log("type of userScenes is " + typeof action.req.userScenes);
+        console.log("seeing userScenes as populated, setting to received value");
+        newUserScenes = action.req.userScenes;
+      }
       return Object.assign({}, state, {
-          ...state,
-          user: action.userScenes
+        ...state,
+        user: newUserScenes
       });
-    case GET_USER_SCENE_IDS_FAILED:
+    case GET_USER_SCENE_IDS_FAILURE:
       return Object.assign({}, state, {
-          ...state,
-          user: []
+        ...state,
+        user: ["failed"]
       });
-    case GET_SCENE_BRIEFS:
+    case GET_SCENE_BRIEFS_REQUEST:
       var loadingBriefs = {};
       _.map(action.ids, function(id) {
         loadingBriefs[id] = "fetching"
@@ -49,13 +60,13 @@ export default function scenes(state = {
       return Object.assign({}, state, {
           ...loadingBriefs
       });
-    case UPDATE_SCENE_BRIEFS:
+    case GET_SCENE_BRIEFS_SUCCESS:
       var newState = Object.assign({}, state, {});
-      _.map(action.sceneBriefs, function(sceneBrief) {
+      _.map(action.req, function(sceneBrief) {
         newState[sceneBrief._id] = sceneBrief
       });
       return newState;
-    case GET_SCENE_BRIEFS_FAILED:
+    case GET_SCENE_BRIEFS_FAILURE:
       var newState = Object.assign({}, state, {});
       _.map(state, function(scene, index) {
           if (scene === "fetching") {
@@ -63,15 +74,16 @@ export default function scenes(state = {
           }
       });
       return newState;
-    case GET_SCENE:
+    case GET_SCENE_REQUEST:
       var newState = Object.assign({}, state, {});
       newState[action.sceneId] = "fetching";
       return newState;
-    case UPDATE_SCENE:
+    case GET_SCENE_SUCCESS:
+    console.log("dafasd " + JSON.stringify(action));
       var newState = Object.assign({}, state, {});
-      newState[action.scene._id] = action.scene;
+      newState[action.sceneId] = action.req;
       return newState;
-    case GET_SCENE_FAILED:
+    case GET_SCENE_FAILURE:
       var newState = Object.assign({}, state, {});
       _.map(state, function(scene, index) {
           if (scene === "fetching") {
@@ -79,30 +91,35 @@ export default function scenes(state = {
           }
       });
       return newState;
-    case SCENE_CREATED:
+    case CREATE_SCENE_SUCCESS:
       var newState = Object.assign({}, state, {});
-      newState.user.push(action.sceneId);
+      newState.user.push(action.req.sceneId);
+      newState[action.req.sceneId] = action.req.scene;
       return newState;
-    case DELETE_SCENE:
+    case 'DELETE_SCENE':
+        var newState = Object.assign({}, state, {});
+        newState[action.sceneId].deleting = true;
+        return newState;
+    case DELETE_SCENE_REQUEST:
       var newState = Object.assign({}, state, {});
       newState[action.sceneId].deleting = true;
       return newState;
-    case SCENE_DELETED:
+    case DELETE_SCENE_SUCCESS:
       var newState = Object.assign({}, state, {});
       // remove from scenes
       delete newState[action.sceneId];
       // remove from user scene list
       newState.user = _.without(newState.user, action.sceneId);
       return newState;
-    case DELETE_SCENE_FAILED:
+    case DELETE_SCENE_FAILURE:
       var newState = Object.assign({}, state, {});
       delete newState[action.sceneId].deleting;
       return newState;
-    case ADD_DOC_TO_SCENE:                // TODO: implement loading
+    case ADD_DOC_TO_SCENE_REQUEST:                // TODO: implement loading
       return state;
-    case ADD_DOC_TO_SCENE_FAILED:         // TODO: implement loading
+    case ADD_DOC_TO_SCENE_FAILURE:         // TODO: implement loading
       return state;
-    case DOC_ADDED_TO_SCENE:
+    case ADD_DOC_TO_SCENE_SUCCESS:
       var newState = Object.assign({}, state, {});
       newState[action.sceneId].documents.push({
         type: action.type,

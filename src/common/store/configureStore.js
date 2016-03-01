@@ -1,4 +1,5 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, compose } from 'redux';
+import applyMiddleware from 'redux-wait';
 import DevTools from '../../server/devtools';
 import { reduxReactRouter } from 'redux-router';
 import thunk from 'redux-thunk';

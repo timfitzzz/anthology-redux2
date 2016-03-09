@@ -12,6 +12,7 @@ import scenes from './scenes';
 
 const rootReducer = combineReducers({
   user : user,
+  users: users,
   version : version,
   counter : undoable(counter),
   layout : undoable(layout),

@@ -17,7 +17,7 @@ class SceneList extends Component {
   componentWillReceiveProps() {
     var deleting = this.state.deleting;
     for (var scene in this.state.deleting) {
-      if (!this.props.scenes[scene].deleting) {
+      if (!this.props.scenes[scene]) {
         deleting = deleting.slice(deleting.indexOf(scene), 1);
         console.log('deleting is ' + deleting + 'as of prop receipt');
       }
@@ -63,10 +63,8 @@ class SceneList extends Component {
   handleControlSelection(type, sceneId) {
     var deleting = this.state.deleting;
     // if (this.state.deleting !== []) {
-    //   deleting = this.state.deleting.slice();
+    //    deleting = this.state.deleting.slice();
     // }
-
-    debugger;
     var that = this;
     switch (type) {
       case 'edit':

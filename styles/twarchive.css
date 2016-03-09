@@ -15,10 +15,10 @@
 
 .list-item-title {
 
-  margin: auto 5px;
+  margin: 2px;
   clear: left;
   float: left;
-  width: 50%;
+  width: 40%;
 
 }
 
@@ -28,7 +28,7 @@
   float: left;
   font-size: .5em;
     vertical-align: bottom;
-    width: 25%;
+    width: 20%;
 
 }
 
@@ -37,7 +37,16 @@
     margin: auto 5px;
   float: right;
   font-size: .5em;
-  width: 25%;
+  width: 20%;
+}
+
+.list-item-controls {
+
+  margin: auto 5px;
+  float: right;
+  font-size: .8em;
+  width: 20%;
+
 }
 
 .deleting {

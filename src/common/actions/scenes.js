@@ -71,7 +71,7 @@ export function getUserSceneIds(userId) {
           type: GET_USER_SCENE_IDS,
           userId,
           promise: Scene.isStub === true
-                  ? request.post(`http://127.0.0.1:3002/api/getUserSceneIds`, { userId })
+                  ? request.post('http://127.0.0.1:3002/api/getUserSceneIds', { userId })
                   : Scene.getUserSceneIds(userId)
         };
     dispatch(action);
@@ -182,7 +182,7 @@ export function deleteScene (sceneId) {
     var action = {
         type: DELETE_SCENE,
         sceneId,
-        promise: request.post("http://127.0.0.1:3002/api/deleteScene", { scene })
+        promise: request.post("http://127.0.0.1:3002/api/deleteScene", { sceneId })
     };
     dispatch(action);
     return action;

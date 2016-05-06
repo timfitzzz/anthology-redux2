@@ -21,7 +21,7 @@ export default function init(app) {
     // User.findOne won't fire until we have all our data back from Twitter
 
     process.nextTick(function() {
-      loginOrCreateNewUserAndLogin(token, profile, done);
+      loginOrCreateNewUserAndLogin(token, tokenSecret, profile, done);
     });
 
   }));
@@ -51,7 +51,7 @@ export default function init(app) {
 
 };
 
-function loginOrCreateNewUserAndLogin(token, profile, done) {
+function loginOrCreateNewUserAndLogin(token, tokenSecret, profile, done) {
   User.findOne({'accounts.twitter.id': profile.id}, function (err, user){
 
     if (err) {
@@ -64,7 +64,7 @@ function loginOrCreateNewUserAndLogin(token, profile, done) {
       return done(null, user); // user exists, so return them
     } else {
       // if there's no user, create one
-      var newUser = createNewTwitterUser(profile, token);
+      var newUser = createNewTwitterUser(profile, token, tokenSecret);
       // save user in db
       newUser.save(function (err) {
         if (err) {
@@ -77,7 +77,7 @@ function loginOrCreateNewUserAndLogin(token, profile, done) {
   });
 }
 
-function createNewTwitterUser(profile, token) {
+function createNewTwitterUser(profile, token, tokenSecret) {
   console.log('creating new Twitter user: ' + profile.username);
   var newUser = new User();
   //newUser.id = Users.
@@ -87,7 +87,7 @@ function createNewTwitterUser(profile, token) {
     newUser.accounts.twitter.picture = profile.photos[0].value;
   }
   newUser.tokens = {};
-  newUser.tokens.twitter = token;
+  newUser.tokens.twitter = { token, tokenSecret };
   console.log('new user: ', newUser);
   return newUser;
 }

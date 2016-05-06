@@ -119,6 +119,8 @@ initApiRouter(app);
 
 app.get('/*', function (req, res) {
 
+  console.log(req.user);
+
   const location = createLocation(req.url);
 
   // if(req.user !== undefined) {

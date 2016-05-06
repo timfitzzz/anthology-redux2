@@ -1,7 +1,9 @@
 import Twit from 'twit';
 import { TWITTER_KEY, TWITTER_SECRET} from '../../../secrets';
 
-// twit returns an api connection w/ methods. if no access_token or access_token_secret are provided, an app-only connection is made.
+// twit returns an api connection w/ methods.
+// if no access_token or access_token_secret are provided,
+// an app-only connection is made.
 
 export function twit (access_token, access_token_secret) {
 

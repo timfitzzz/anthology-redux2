@@ -14,6 +14,8 @@ var webpackConfig = {
     new webpack.NoErrorsPlugin(),
     new webpack.NormalModuleReplacementPlugin( new RegExp("/server/models/scene"), function(){return{ isStub: true }}),
     new webpack.NormalModuleReplacementPlugin( new RegExp("/server/models/user"), function(){return{ isStub: true }})
+    new webpack.NormalModuleReplacementPlugin( new RegExp("/server/models/tweet"), function(){return{ isStub: true }})
+
   ]
 };
 

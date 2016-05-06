@@ -7,7 +7,7 @@ export default function users(state = {}, action) {
         ...state,
         [action.userId]:  action.user
       });
-    case default:
+    default:
       return state;
   }
 }

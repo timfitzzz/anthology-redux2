@@ -93,7 +93,12 @@ export default function scenes(state = {
       return newState;
     case CREATE_SCENE_SUCCESS:
       var newState = Object.assign({}, state, {});
-      newState.user.push(action.req.sceneId);
+      if ( state.user[0] === "none" || state.user[0] === "fetching") {
+        newState.user[0] = action.req.sceneId;
+      }
+      else {
+        newState.user.push(action.req.sceneId);
+      }
       newState[action.req.sceneId] = action.req.scene;
       return newState;
     case 'DELETE_SCENE':

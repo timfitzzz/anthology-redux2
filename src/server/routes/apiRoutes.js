@@ -1,6 +1,8 @@
 import map from 'underscore'
 import User from '../models/user'
 import Scene from '../models/scene'
+import * as Tweet from '../models/tweet';
+
 var util = require('util');
 import _ from 'underscore';
 import async from 'async';
@@ -140,12 +142,12 @@ export function initApiRouter(app) {
   // TWITTER INTERACTION routes
 
   app.post('/twitter/search', function(req, res) {
-    // if (!req.isAuthenticated()) {
-    //   res.sendStatus(401);
-    // }
-    // else {
+    if (!req.isAuthenticated()) {
+      res.sendStatus(401);
+    }
+    else {
       var q = req.body.query;
-      var T = twit();
+      var T = twit(user.tokens.twitter.token, user.tokens.twitter.tokenSecret);
       console.log(req.body);
       T.get('search/tweets', {q, count: 100}, function(err, data, response) {
         if (err) {
@@ -155,11 +157,24 @@ export function initApiRouter(app) {
           res.send(data);
         }
       });
-    //
-    // }
 
+    }
+  });
 
-
+  app.post('/twitter/getRecentUserTweets', function(req, res) {
+    if (!req.isAuthenticated()){
+      res.sendStatus(401);
+    } else {
+      Tweet.getRecentUserTweets(req.user, req.body.userId, function(err, data, response) {
+        if (err) {
+          res.send(response);
+        }
+        else {
+          console.log(data);
+          res.send(data);
+        }
+      });
+    }
   });
 
 

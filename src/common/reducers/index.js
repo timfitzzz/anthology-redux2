@@ -3,6 +3,7 @@ import { routerStateReducer } from 'redux-router';
 import undoable from 'redux-undo';
 
 import user from './user';
+import users from './users';
 import counter from './counter';
 import layout from './layout';
 import todos from './todos';

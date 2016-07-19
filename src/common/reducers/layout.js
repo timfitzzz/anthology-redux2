@@ -1,11 +1,15 @@
-import { TOGGLE_SIDEBAR } from '../actions/layout';
+import { TOGGLE_SIDEBAR, POPULATE_SEARCH } from '../actions/layout';
 
-export default function layout(state = {sidebarOpen: false}, action) {
+export default function layout(state = {sidebarOpen: false, search_docs: []}, action) {
   switch (action.type) {
   case TOGGLE_SIDEBAR:
-    return {
-    	sidebarOpen : action.value	
-    };
+    return Object.assign({}, state, {
+    	sidebarOpen : action.value
+    });
+  case POPULATE_SEARCH:
+    return Object.assign({}, state, {
+      search_docs: action.docs
+    });
   default:
     return state;
   }

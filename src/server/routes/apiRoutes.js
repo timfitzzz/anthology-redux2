@@ -147,9 +147,8 @@ export function initApiRouter(app) {
     }
     else {
       var q = req.body.query;
-      var T = twit(user.tokens.twitter.token, user.tokens.twitter.tokenSecret);
-      console.log(req.body);
-      T.get('search/tweets', {q, count: 100}, function(err, data, response) {
+      var T = twit(req.user.tokens.twitter.token, req.user.tokens.twitter.tokenSecret);
+      T.get('search/tweets', {q: q, count: 100}, function(err, data, response) {
         if (err) {
           res.send(response);
         }
@@ -158,6 +157,23 @@ export function initApiRouter(app) {
         }
       });
 
+    }
+  });
+
+  app.post('/twitter/getOwnRecents', function(req, res) {
+    if (!req.isAuthenticated()){
+      res.sendStatus(401);
+    } else {
+      var T = twit(req.user.tokens.twitter.token, req.user.tokens. twitter.tokenSecret);
+      T.get('statuses/user_timeline', {user_id: req.user.accounts.twitter.id}, function(err, data, response) {
+        if (err) {
+          res.send(response);
+        }
+        else {
+          console.log(data);
+          res.send(data);
+        }
+      });
     }
   });
 

@@ -52,6 +52,8 @@ const renderFullPage = (html, initialState) => {
   `;
 }
 
+app.use(bodyParser.json());
+
 if(process.env.NODE_ENV !== 'production'){
   const compiler = webpack(webpackConfig);
   app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig.output.publicPath }));
@@ -61,7 +63,7 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 // add cookieparser for auth
-app.use(bodyParser.json());
+
 app.use(cookieParser());
 
 app.use(morgan('dev')); // log every request to the console

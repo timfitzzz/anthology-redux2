@@ -12,6 +12,10 @@ class TwitterSearch extends Component {
       results: [],
       search_box_contents: ''
     }
+    this.getOwnRecents = this.getOwnRecents.bind(this);
+  }
+
+  componentDidMount() {
   }
 
   getOwnRecents() {
@@ -25,7 +29,10 @@ class TwitterSearch extends Component {
       body: JSON.stringify({
       })
     })
-    .then(responseToJson).then(function(data) { this.setState({ results: data }) });
+    .then(responseToJson).then(function(data) { 
+      console.log('recents retrieved'); 
+      this.setState({ results: data }) 
+    });
 
   }
 
@@ -43,6 +50,7 @@ class TwitterSearch extends Component {
       <div className="twitter-search">
 
         <SearchBar onChange={this.handleChange} onSubmit={this.handleSubmit}/>
+        <button onClick={this.getOwnRecents}>load tweets</button>
         <TwitterSearchResults tweets={this.state.results} />
 
 

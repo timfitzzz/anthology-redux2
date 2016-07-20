@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === 'production') {
       }),
       new ExtractTextPlugin("app.css"),
       new webpack.optimize.UglifyJsPlugin({minimize: true}),
-new webpack.NormalModuleReplacementPlugin( new RegExp("/server/models/scene"), function(){return{ isStub: true }})
+      new webpack.NormalModuleReplacementPlugin( new RegExp("/server/models/scene"), function(){return{ isStub: true }})
 
     ]
   });
